@@ -19,23 +19,32 @@ const Hallway = (() => {
   const DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
   const spriteCache = {};
 
+  const RETRIES = 2;
+  function loadImgNTimes(src, label, triesLeft, res, rej) {
+    const img = new Image();
+    img.onload = () => res(img);
+    img.onerror = () => {
+      if (triesLeft > 0) {
+        setTimeout(() => loadImgNTimes(src, label, triesLeft - 1, res, rej), 400);
+      } else {
+        rej(new Error(label + ' (' + src + ')'));
+      }
+    };
+    img.src = src + (src.indexOf('?') < 0 ? '?v=1' : '&v=1');
+  }
+  function loadImg(src, label) {
+    return new Promise((res, rej) => loadImgNTimes(src, label, RETRIES, res, rej));
+  }
+
   function preload() {
     const jobs = [];
     for (let i = 1; i <= 7; i++) {
-      jobs.push(new Promise((res, rej) => {
-        const img = new Image();
-        img.onload = () => res(img);
-        img.onerror = () => rej(new Error('map ' + i));
-        img.src = 'assets/maps/hallway-' + i + '.png';
-      }).then(img => { state.maps[i] = img; }));
+      jobs.push(loadImg('assets/maps/hallway-' + i + '.png', 'map ' + i)
+        .then(img => { state.maps[i] = img; }));
     }
     for (const d of ['down', 'up', 'left', 'right']) for (const p of ['idle', 'walk1', 'walk2']) {
-      jobs.push(new Promise((res, rej) => {
-        const img = new Image();
-        img.onload = () => res(img);
-        img.onerror = () => rej(new Error('sprite ' + d + '-' + p));
-        img.src = 'assets/hero/' + d + '-' + p + '.png';
-      }).then(img => { spriteCache[d + '-' + p] = img; }));
+      jobs.push(loadImg('assets/hero/' + d + '-' + p + '.png', 'sprite ' + d + '-' + p)
+        .then(img => { spriteCache[d + '-' + p] = img; }));
     }
     return Promise.all(jobs);
   }
