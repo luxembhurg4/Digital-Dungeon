@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Digital Life: The Dungeon of Tabs</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--stone:#3a3148;--mortar:#261e32;--shade:rgba(10,6,16,.7);--paper:#ead9a7;--paper2:#dcc88f;--ink:#2b1d12;--torch:#ffb23e;--blood:#b3342b;--moss:#3f7a2f;--wood:#7a4a2a;--wood2:#5c3519}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--stone:#3a3148;--mortar:#261e32;--shade:rgba(10,6,16,.7)}}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--stone:#6a5f80;--mortar:#4b3f5c;--shade:rgba(30,20,50,.45)}}
+:root[data-theme="dark"]{--stone:#3a3148;--mortar:#261e32;--shade:rgba(10,6,16,.7)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;font:22px/1.3 VT323,"Courier New",monospace;color:var(--ink);min-height:100vh;
+background:linear-gradient(var(--mortar) 4px,transparent 4px) 0 0/64px 32px,linear-gradient(90deg,var(--mortar) 4px,transparent 4px) 0 0/64px 64px,var(--stone)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(circle 300px at var(--mx,50%) var(--my,25%),transparent 0,var(--shade) 100%)}
+h1,h2,h3{font-family:"Press Start 2P","Courier New",monospace;font-weight:400;line-height:1.5;margin:0 0 .6em}
+h1{font-size:clamp(1.1rem,4.6vw,1.9rem);color:var(--torch);text-shadow:3px 3px 0 #000;text-align:center}
+h2{font-size:clamp(.95rem,3.4vw,1.3rem);color:var(--torch);text-shadow:3px 3px 0 #000}h3{font-size:.8rem}
+.hud{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--wood2);border-bottom:4px solid #000;padding:8px 8px 0}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:0}
+.tab{flex:0 0 auto;display:flex;align-items:center;gap:6px;font:inherit;font-size:20px;color:#f1dfb3;background:repeating-linear-gradient(0deg,var(--wood) 0 6px,#6b3f22 6px 8px);border:4px solid #000;border-bottom:0;padding:4px 10px;cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{background:var(--torch);color:var(--ink)}
+.tab:focus-visible,.btn:focus-visible,summary:focus-visible,input:focus-visible{outline:4px solid #fff;outline-offset:2px}
+.xp{display:flex;align-items:center;gap:10px;color:#f1dfb3;font-size:18px;padding:5px 2px}.xp div{flex:1;height:10px;background:#000;border:2px solid #000}.xp i{display:block;height:100%;background:var(--moss);width:0;transition:width .4s steps(8)}
+main{position:relative;z-index:2;max-width:860px;margin:0 auto;padding:22px 16px 90px}
+.room{display:none}.room.on{display:block;animation:door .4s steps(5)}
+@keyframes door{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.panel{background:repeating-linear-gradient(0deg,var(--paper) 0 5px,var(--paper2) 5px 6px);border:0;padding:14px 16px;margin:18px 4px;box-shadow:0 -4px 0 #000,0 4px 0 #000,-4px 0 0 #000,4px 0 0 #000,8px 8px 0 4px rgba(0,0,0,.45)}
+.panel p{margin:.4em 0}
+.light{color:#f1dfb3;text-shadow:2px 2px 0 #000;margin:8px 0}
+.btn{font-family:"Press Start 2P","Courier New",monospace;font-size:.62rem;line-height:1.4;background:var(--torch);color:var(--ink);border:0;padding:12px 14px;cursor:pointer;box-shadow:0 -4px 0 #000,0 4px 0 #000,-4px 0 0 #000,4px 0 0 #000,4px 8px 0 4px rgba(0,0,0,.45)}
+.btn.alt{background:#cdbd8a}.btn:active{transform:translate(2px,2px)}
+.stage{display:flex;justify-content:center;align-items:flex-end;gap:22px;margin:16px 0}
+.sp{display:inline-block;line-height:0}.sp svg{shape-rendering:crispEdges}
+.flick{animation:fl .8s steps(2) infinite}@keyframes fl{50%{transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){.flick,.room.on{animation:none}}
+.row{display:grid;grid-template-columns:104px 1fr 76px;gap:10px;align-items:center;margin:8px 0}
+.bar{height:20px;background:#2b1d12;border:3px solid #000}.bar i{display:block;height:100%;background:repeating-linear-gradient(90deg,var(--moss) 0 10px,transparent 10px 12px);transition:width .8s steps(10)}
+.wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:560px}td,th{border:3px solid var(--ink);padding:4px 8px;text-align:left;vertical-align:top}th{background:var(--paper2)}
+details{background:var(--paper);margin:14px 4px;box-shadow:0 -4px 0 #000,0 4px 0 #000,-4px 0 0 #000,4px 0 0 #000,6px 8px 0 3px rgba(0,0,0,.45)}
+summary{cursor:pointer;padding:10px 12px;display:flex;gap:10px;align-items:center;font-size:23px}details p{margin:0;padding:0 14px 12px}
+.clock{font-family:"Press Start 2P",monospace;font-size:clamp(1.6rem,8vw,2.6rem);color:var(--blood);text-align:center;margin:10px 0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+ul{padding-left:20px;margin:6px 0}li{margin:3px 0}
+.nav{display:flex;justify-content:space-between;gap:10px;margin:30px 4px 0}
+.day{display:flex;gap:10px;align-items:flex-start;margin:8px 0;cursor:pointer}.day input{margin-top:5px;width:22px;height:22px;accent-color:var(--moss)}.day.done span{text-decoration:line-through;color:var(--moss)}
+.stamp{display:inline-block;background:var(--ink);color:var(--torch);padding:10px 14px;font-family:"Press Start 2P",monospace;font-size:.7rem;line-height:1.6;box-shadow:4px 4px 0 var(--blood)}
+@media (max-width:520px){.row{grid-template-columns:80px 1fr 62px}}
+</style>
+</head>
+<body>
+<div class="hud"><div class="tabs" role="tablist" id="tabs" aria-label="Dungeon rooms"></div>
+<div class="xp"><span id="xpt">Rooms explored 1/7</span><div><i id="xpb"></i></div></div></div>
+<main>
+
+<section class="room" data-name="Gate">
+  <h1>My Digital Life:<br>A Gen Z Technology Scrapbook</h1>
+  <div class="stage"><span class="sp flick" data-sp="torch" data-px="8"></span><span class="sp" data-sp="knight" data-px="12"></span><span class="sp flick" data-sp="torch" data-px="8"></span></div>
+  <div class="panel"><h3>Hero: James Carl M. Osio</h3><p>Class: BSCpE-4B, Computer Engineering. Side quest: on-call tech support.<br>Gear: smartphone and laptop. Daily screen time: about 8 hours.</p></div>
+  <p class="light">Welcome to the Dungeon of Tabs. Every room is a tab I keep open in my life. Move with the tabs, the buttons, or the arrow keys. One room has a monster.</p>
+  <button class="btn" data-go="1">Enter the dungeon</button>
+</section>
+
+<section class="room" data-name="Profile Hall">
+  <h2>Profile Hall: my digital media profile</h2>
+  <p class="light">I live half in entertainment and half in problem-solving. The same two devices that feed me Reels also help me fix real tech problems on call.</p>
+  <div class="panel"><h3>Share of my active screen time</h3><div id="bars"></div>
+  <p>Spotify (3 hrs) plays in the background, so it is not counted. Hours are rough and overlap across phone and laptop, so the chart shows percentages.</p></div>
+  <div class="panel wrap"><table>
+    <tr><th>Activity</th><th>Platform</th><th>Time</th><th>Purpose</th><th>Effect on me</th></tr>
+    <tr><td>Reels, social media</td><td>FB Lite</td><td>8 hrs</td><td>Entertainment</td><td>Relaxed, but time vanishes</td></tr>
+    <tr><td>Coding</td><td>VS Code</td><td>3 hrs</td><td>Study, skills</td><td>Focused</td></tr>
+    <tr><td>Tutorials, playthroughs</td><td>YouTube</td><td>1 hr</td><td>Learning, rest</td><td>Informed, late nights</td></tr>
+    <tr><td>Chats</td><td>Messenger</td><td>31 min</td><td>Communication</td><td>Connected, sometimes distracted</td></tr>
+    <tr><td>Troubleshooting help</td><td>AI</td><td>30 min</td><td>On-call fixes</td><td>Confident, faster</td></tr>
+    <tr><td>Research, leads</td><td>Firefox</td><td>10 min</td><td>Learning, work</td><td>Informed</td></tr>
+    <tr><td>Music</td><td>Spotify</td><td>3 hrs</td><td>Mood, focus</td><td>Calm, energized</td></tr>
+  </table></div>
+</section>
+
+<section class="room" data-name="Analysis Chamber">
+  <h2>Analysis Chamber: critical analysis</h2>
+  <p class="light">Open each treasure chest to read my answer.</p>
+  <h3 class="light">Media consumption</h3>
+  <details><summary>1. What content do I consume most?</summary><p>Short-form Reels and social posts, then music, playthrough videos, and tech tutorials.</p></details>
+  <details><summary>2. Which platform, and why?</summary><p>FB Lite. My chats, classmates, and Reels all live there, and it runs smoothly on my phone.</p></details>
+  <details><summary>3. Short-form or long-form?</summary><p>Both, for different jobs. Reels are quick breaks. Long videos and tutorials are for relaxing or really learning, because a real technical fix cannot be explained in 30 seconds.</p></details>
+  <details><summary>4. How does the algorithm shape what I watch?</summary><p>The more Reels I watch, the more similar ones I get. It is built for watch time, not my wellbeing, so I treat my feed as a suggestion, not the whole picture.</p></details>
+  <h3 class="light">Communication</h3>
+  <details><summary>5. How has tech changed how I communicate?</summary><p>Group chats make coordinating with classmates instant, and family is one message away. The tradeoff: I am "available" all the time.</p></details>
+  <details><summary>6. Text, emojis, memes, GIFs, voice, or video?</summary><p>Mostly text, plus reactions, stickers, and shared Reels. They carry tone faster than typing, which fits Gen Z communication: visual, instant, asynchronous, and authenticity-oriented.</p></details>
+  <details><summary>7. Advantages and disadvantages?</summary><p>Advantages: speed, convenience, closeness across distance. Disadvantages: lost tone, shorter attention in real conversations, pressure to reply right away.</p></details>
+  <h3 class="light">Benefits and risks</h3>
+  <details><summary>8. Three benefits as a student</summary><p>Access to educational resources (YouTube, forums, AI). Digital fluency through tools like VS Code. Global connectivity with classmates, teachers, and communities.</p></details>
+  <details><summary>9. Three risks I have experienced</summary><p>Endless Reels scrolling that eats time. Late-night binge-watching that cuts sleep. Making a hasty fix without verifying it, as in the router story.</p></details>
+  <details><summary>10. Benefits or risks: which wins?</summary><p>The benefits win, but only when I am intentional. Tech gave me skills and on-call experience. The risks come mostly from passive use, which is why my plan targets them directly.</p></details>
+</section>
+
+<section class="room" data-name="Router Quest">
+  <h2>Router Quest: when tech scared me</h2>
+  <div class="stage"><span class="sp" data-sp="knight" data-px="10"></span></div>
+  <div class="panel">
+    <p>At the office, nothing could connect to the ISP's main router. Cornered, and wanting to be careful, I refused to touch the actual router. I built a workaround instead. It held for a while, then created a new set of problems.</p>
+    <p>When my head cleared, I went to YouTube, forums, and AI to ask whether I could fix it without changing the ISP's configuration. I could. The fix worked, and nothing else broke.</p>
+    <p><b>Loot gained:</b> a feared problem gets smaller when I research it first. Tech did not just hand me the answer, it made me more open-minded about problems I used to avoid.</p>
+  </div>
+</section>
+
+<section class="room" data-name="Reel Trap">
+  <h2>The Reel Trap: my real weakness</h2>
+  <p class="light">I get so immersed in Reels that I do not notice time passing. Fight the Reel Monster. It is 9:00 PM and you only meant to watch one.</p>
+  <div class="stage"><span class="sp" data-sp="monster" data-px="12"></span></div>
+  <div class="panel"><div class="clock" id="clock" aria-live="polite">9:00 PM</div>
+    <p id="trapmsg" style="text-align:center">Reels watched: 0</p>
+    <div style="text-align:center;margin-top:12px"><button class="btn" id="swipe">Swipe to next Reel</button> <button class="btn alt" id="reset">Escape</button></div></div>
+  <p class="light">Each swipe feels like seconds. It is about 17 minutes. That is the habit my plan fixes.</p>
+</section>
+
+<section class="room" data-name="Plan Armory">
+  <h2>Plan Armory: 7-day digital wellness plan</h2>
+  <p class="light">Tick each action as you complete it.</p>
+  <div class="panel" id="plan"></div>
+  <p class="light" id="planmsg"></p>
+</section>
+
+<section class="room" data-name="Infographic Vault">
+  <h2>My Healthier Digital Life</h2>
+  <div class="cols">
+    <div class="panel"><h3>3 positive effects</h3><ul><li>Learning access (YouTube, forums, AI)</li><li>Digital skills for my CpE career</li><li>Global connectivity</li></ul></div>
+    <div class="panel"><h3>3 risks</h3><ul><li>Endless Reels scrolling</li><li>Sleep loss from binge-watching</li><li>Unverified fixes and info</li></ul></div>
+    <div class="panel"><h3>5 healthy habits</h3><ul><li>Cap Reels at 1 hour a day</li><li>Mute non-essential notifications</li><li>90-minute phone-away study blocks</li><li>Verify with 2 sources before trusting</li><li>Screens off 30 min before bed</li></ul></div>
+  </div>
+  <div class="panel"><b>Key idea from class:</b> Gen Z communication is visual, instant, asynchronous, and authenticity-oriented.</div>
+  <p><span class="stamp">I will use technology to build skills, not to burn hours.</span></p>
+  <p class="light">James Carl M. Osio · BSCpE-4B</p>
+</section>
+
+<section class="room" data-name="Exit">
+  <h2>The Exit: my one change</h2>
+  <div class="stage"><span class="sp" data-sp="chest" data-px="12"></span></div>
+  <div class="panel"><p>After analyzing my digital habits, the ONE change I will make is to <b>cap my Reels at one hour a day</b>, so technology stays a tool for learning and fixing problems instead of something that controls my time and sleep.</p></div>
+  <p class="light">Dungeon cleared.</p>
+  <button class="btn alt" data-go="0">Back to the gate</button>
+</section>
+
+<div class="nav"><button class="btn alt" id="prev">Previous room</button><button class="btn" id="next">Next room</button></div>
+</main>
+<script>
+var P={k:"#1a1210",s:"#c3ced8",d:"#6c7a8a",r:"#c8372d",f:"#f0c89a",g:"#f0b23e",b:"#7a4a2a",y:"#ffd24a",o:"#ff8a1f",e:"#7cc46a",m:"#3b3f4a"};
+var S={
+knight:["....rr....","...kkkk...","..kssssk..","..ksffsk..","..kssssk..",".kkddddkk.","ksddssddsk","ks.dggd.sk","kk.dssd.kk","...dssd...","...kddk...","..kkkkkk.."],
+torch:["...yy...","..yoyy..",".yoooyy.",".yooooy.","..yooy..","...bb...","...bb...","...bb...","...bb...","...bb...","..kkkk.."],
+chest:["..kkkkkkkk..",".kbbbbbbbbk.","kbbbbbbbbbbk","kggggggggggk","kbbbbggbbbbk","kbbbbggbbbbk","kbbbbbbbbbbk","kbbbbbbbbbbk","kkkkkkkkkkkk"],
+monster:["..kkkkkk..",".kmmmmmmk.","kmeeeeeemk","kerreerrek","kerkeekrek","keeeeeeeek","kekeeeekek","kekkkkkkek","kmeeeeeemk",".kmmmmmmk.","..kkkkkk.."]};
+function sprite(n,px){var m=S[n],h=m.length,w=m[0].length,o="";m.forEach(function(row,y){for(var x=0;x<w;x++){var c=row[x];if(c!==".")o+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+P[c]+'"/>'}});
+return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+w+" "+h+'" width="'+w*px+'" height="'+h*px+'" aria-hidden="true">'+o+"</svg>"}
+[].forEach.call(document.querySelectorAll("[data-sp]"),function(e){e.innerHTML=sprite(e.dataset.sp,+e.dataset.px)});
+[].forEach.call(document.querySelectorAll("summary"),function(s){s.insertAdjacentHTML("afterbegin",'<span class="sp">'+sprite("chest",2)+"</span>")});
+var rooms=[].slice.call(document.querySelectorAll(".room")),tabs=document.getElementById("tabs"),cur=0,seen={};
+rooms.forEach(function(r,i){var b=document.createElement("button");b.className="tab";b.setAttribute("role","tab");b.onclick=function(){go(i)};tabs.appendChild(b)});
+function go(i){cur=Math.max(0,Math.min(rooms.length-1,i));seen[cur]=1;
+rooms.forEach(function(r,k){r.classList.toggle("on",k===cur)});
+[].forEach.call(tabs.children,function(t,k){t.setAttribute("aria-selected",k===cur);t.innerHTML=(k===cur?'<span class="sp">'+sprite("knight",2)+"</span>":"")+rooms[k].dataset.name});
+tabs.children[cur].scrollIntoView({block:"nearest",inline:"center"});window.scrollTo(0,0);
+var n=Object.keys(seen).length;document.getElementById("xpt").textContent="Rooms explored "+n+"/"+rooms.length;document.getElementById("xpb").style.width=n/rooms.length*100+"%";
+document.getElementById("prev").style.visibility=cur?"visible":"hidden";document.getElementById("next").style.visibility=cur<rooms.length-1?"visible":"hidden"}
+document.getElementById("prev").onclick=function(){go(cur-1)};document.getElementById("next").onclick=function(){go(cur+1)};
+[].forEach.call(document.querySelectorAll("[data-go]"),function(b){b.onclick=function(){go(+b.dataset.go)}});
+document.addEventListener("keydown",function(e){if(/INPUT|SUMMARY/.test(e.target.tagName))return;if(e.key==="ArrowRight")go(cur+1);if(e.key==="ArrowLeft")go(cur-1)});
+document.addEventListener("pointermove",function(e){document.body.style.setProperty("--mx",e.clientX+"px");document.body.style.setProperty("--my",e.clientY+"px")});
+var d=[["FB Lite",8],["VS Code",3],["YouTube",1],["Messenger",.52],["AI",.5],["Firefox",.17]],tot=d.reduce(function(a,x){return a+x[1]},0),bars=document.getElementById("bars");
+d.forEach(function(x){var p=x[1]/tot*100;bars.insertAdjacentHTML("beforeend",'<div class="row"><span>'+x[0]+'</span><div class="bar"><i style="width:'+p+'%"></i></div><span>'+p.toFixed(1)+"%</span></div>")});
+var mins=0,n=0,clock=document.getElementById("clock"),msg=document.getElementById("trapmsg");
+function fmt(){var t=21*60+mins,h=Math.floor(t/60)%24,m=t%60;return (h%12||12)+":"+(m<10?"0":"")+m+" "+(h>=12?"PM":"AM")}
+document.getElementById("swipe").onclick=function(){n++;mins+=17;clock.textContent=fmt();msg.textContent="Reels watched: "+n+(n>=6?" · You lost "+(mins/60).toFixed(1)+" hours.":"")};
+document.getElementById("reset").onclick=function(){mins=0;n=0;clock.textContent=fmt();msg.textContent="Escaped. Reels watched: 0"};
+var plan=["Turn off non-essential notifications (keep 3 apps)","Set a 1-hour limit on FB Lite and Reels","One 90-minute study block, phone in another room","Verify 2 claims or AI answers with 2 reliable sources","One offline hour with friends or family","No screens 30 minutes before bed","Review Screen Time and compare it to Day 1"],pl=document.getElementById("plan");
+plan.forEach(function(p,i){pl.insertAdjacentHTML("beforeend",'<label class="day"><input type="checkbox"><span><b>Day '+(i+1)+':</b> '+p+"</span></label>")});
+pl.addEventListener("change",function(){var c=pl.querySelectorAll("input:checked").length;[].forEach.call(pl.querySelectorAll("label"),function(l){l.classList.toggle("done",l.querySelector("input").checked)});document.getElementById("planmsg").textContent=c+" of 7 quests done"+(c===7?". Armory fully stocked.":"")});
+go(0);
+</script>
+</body>
+</html>

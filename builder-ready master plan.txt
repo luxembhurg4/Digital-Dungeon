@@ -1,0 +1,405 @@
+Yes—here’s a builder-ready master plan you can give to whoever is implementing the experience in VS Code.
+
+This separates what already exists in Figma from the behavior that still needs to be built.
+
+Master Plan: My Digital Life — The Dungeon of Tabs
+1. Project goal
+Build a personal digital-life scrapbook presented as a small, explorable dungeon.
+
+The experience combines:
+
+Eight content rooms containing the original scrapbook.
+Seven unique hallway maps connecting those rooms.
+One consistent movable knight controlled by a D-pad or keyboard.
+Physical doorway navigation: the next content room opens only when the character enters its marked entrance.
+The dungeon is a navigation layer—not a difficult game. It should make the scrapbook engaging without making the content frustrating to reach.
+
+Scope boundaries
+Do not add combat, health, enemies that chase the player, inventory requirements, puzzles, or locked treasure unless requested later.
+
+The Reel Monster is a thematic character. Its presence does not imply a combat system.
+
+2. Materials and source priorities
+Use these sources together:
+
+Source	Purpose
+Original attached webpage	Authoritative scrapbook wording, personal details, activity data, questions, wellness actions, and Reel Trap behavior
+Visual reference for content layout, typography, colors, and hierarchy
+Seven hallway designs	Actual map appearance and environmental themes
+Collision guides	Walkable areas, solid areas, spawn positions, and destination thresholds
+Knight direction and movement poses
+Shared environmental artwork
+D-pad states, dimensions, feet anchor, and export conventions
+Important: the Figma deliverables are static designs and assets. Movement, collision, saving, and doorway navigation still need implementation.
+
+Use actual text and accessible controls for the content rooms. Do not turn entire content pages into single background images.
+
+3. Complete journey
+The sequence is fixed:
+
+Gate → hallway 1 → Profile Hall → hallway 2 → Analysis Chamber → hallway 3 → Router Quest → hallway 4 → Reel Trap → hallway 5 → Plan Armory → hallway 6 → Infographic Vault → hallway 7 → Exit
+
+How each stage works
+The visitor starts on the Gate content screen.
+Enter the dungeon opens hallway 1—not Profile Hall directly.
+The knight appears at that hallway’s defined spawn.
+The visitor moves toward the labeled destination entrance.
+Crossing the gold threshold opens the destination content room.
+Movement stops while the visitor reads or interacts with that room.
+A content-room action such as Continue through the dungeon opens the next hallway at its spawn.
+The next room must again be entered through its doorway.
+Navigation changes from the original webpage
+Remove direct Next room shortcuts.
+Remove arrow-key shortcuts that instantly switch content rooms.
+Do not let chapter tabs jump ahead to unopened rooms.
+Use the chapter list primarily to show current position and explored-room status.
+A button may open the hallway. It must not bypass the hallway and open the next room directly.
+
+4. Seven unique maps
+All coordinates below are tile coordinates, not display pixels.
+
+The origin is the top-left corner. X increases rightward; Y increases downward.
+
+Map	Connection and character	Spawn	Destination threshold cells
+Gate → Profile Hall. Arrival court, narrow central passage, upper vestibule; warm banners and treasure.	(11, 14)	(11, 2), (12, 2)
+Profile Hall → Analysis Chamber. L-shaped archive gallery with shelves and scrolls.	(5, 13)	(18, 3), (19, 3)
+Analysis Chamber → Router Quest. U-shaped workshop route around a solid central core.	(5, 4)	(18, 3), (19, 3)
+Router Quest → Reel Trap. Stepped zigzag with green banners, skulls, and the monster.	(5, 14)	(18, 2), (19, 2)
+Reel Trap → Plan Armory. Cross-shaped sanctuary with equipment alcoves and recovery supplies.	(11, 14)	(11, 3), (12, 3)
+Plan Armory → Infographic Vault. Ring-shaped archive around a solid island, with two approaches.	(6, 12)	(11, 1), (12, 1)
+Infographic Vault → Exit. Processional passage leading to a broad final dais.	(11, 14)	(11, 3), (12, 3)
+Keep their layouts distinct. Do not reuse one hallway and only change its colors.
+
+Camera
+The existing maps use a fixed camera showing the entire map. Camera-following and scrolling are unnecessary for this version.
+
+5. Exact collision layout
+Each map has 24 columns × 18 rows.
+
+Start with every cell blocked. Open the following rectangular areas, then apply the solid prop cells listed afterward.
+
+Rectangle notation is (left, top)–(right, bottom). Both ends are inclusive.
+
+Map	Walkable rectangles
+1	(8,2)–(15,7); (10,7)–(13,12); (5,12)–(18,15)
+2	(3,10)–(8,15); (7,10)–(19,13); (16,3)–(20,13)
+3	(3,3)–(7,14); (3,11)–(20,14); (16,3)–(20,14)
+4	(3,11)–(8,15); (6,10)–(15,12); (12,6)–(15,12); (12,4)–(20,7); (17,2)–(20,7)
+5	(4,7)–(19,10); (10,3)–(13,14); (7,11)–(16,15)
+6	(4,3)–(19,14); (9,1)–(14,4). Then block the central island: (8,7)–(15,10).
+7	(5,3)–(18,7); (10,7)–(13,15); (7,12)–(16,15)
+Solid prop cells
+These cells remain blocked even where they lie inside a walkable rectangle:
+
+Map	Blocked prop cells
+1	(8,3), (15,3), (6,13), (17,13)
+2	(3,10), (4,10), (10,13), (11,13), (16,4), (20,7)
+3	(3,5), (20,8), (7,9), (16,9)
+4	(3,12), (8,15), (12,7), (20,6), (17,4)
+5	(4,7), (4,9), (19,7), (19,9), (7,12), (16,12)
+6	(4,5), (19,5), (5,3), (18,13), (17,3), (10,14)
+7	(5,4), (18,4), (7,13), (16,13), (9,4), (14,4)
+Additional rules:
+
+Cable decorations in map 3 are walkable, not obstacles.
+The monster occupies the blocked cell at (17,4) in map 4.
+Torches are mounted on already-solid wall cells.
+Decorative wall edging does not create extra collision rules inside cells designated walkable.
+The colored collision overlays are documentation. Do not display them during normal play.
+6. Character and movement
+Existing asset dimensions
+Tile size: 16 × 16 world pixels
+Map size: 384 × 288 world pixels
+Knight sprite canvas: 16 × 16
+Feet anchor within the sprite: (8,15)
+Feet collision rectangle: X 4–12, Y 11–15, relative to the sprite’s top-left corner
+A spawn coordinate identifies the tile containing the sprite. Initially place the sprite’s top-left corner at that tile’s top-left corner.
+
+Use the feet region for collision—not the entire helmet and body. This allows the character to appear naturally close to walls.
+
+Inputs
+Support:
+
+Up, down, left, and right on the keyboard.
+The four matching D-pad buttons.
+Press-and-hold movement on the D-pad.
+Recommended behavior:
+
+No diagonal movement.
+When two directions are held, use the most recently pressed direction.
+Clear held input when focus is lost, the pointer is released or cancelled, or a content room opens.
+Do not intercept typing or navigation keys while a form control has focus.
+Sprite states
+For each facing direction, use:
+
+Idle
+Walk pose 1
+Walk pose 2
+While moving, alternate the two walking poses. When movement stops—or a wall prevents movement—return to idle while retaining the facing direction.
+
+Suggested starting values, not existing asset requirements:
+
+Movement speed: approximately 64 world pixels per second
+Walking animation: approximately 8 pose changes per second
+Tune these after testing. Speed should not depend on the device’s frame rate.
+
+7. Doorway behavior and return navigation
+Forward entrance
+For every destination:
+
+Detect the character’s feet entering either gold threshold cell.
+Activate the destination once.
+Stop movement and clear held controls.
+Open the matching content room.
+Mark that room explored.
+Move reading focus to the room heading.
+The open doorway artwork above the threshold is decorative. Do not create a second trigger there or require the player to enter a blocked wall cell.
+
+Returning to the hallway
+Provide a Return to hallway action inside content rooms.
+
+When returning:
+
+Restore the same incoming hallway.
+Place the knight safely just below its destination threshold, facing down.
+Require the knight to leave the threshold before that entrance can activate again.
+Do not reopen the content room immediately in a loop.
+Previous-room entrance
+Recommended implementation: use the arrival-side threshold to reopen the room the visitor came from.
+
+For consistency, the arrival threshold can occupy the two cells directly below the spawn:
+
+(spawn X, spawn Y + 1)
+(spawn X + 1, spawn Y + 1)
+These positions are walkable in all seven layouts.
+
+This is a recommended backward-navigation behavior; the existing collision guides specifically document the forward destination triggers.
+
+8. Content-room behavior
+Preserve the original wording and facts. The redesigned layouts change presentation, not the scrapbook’s meaning.
+
+Gate
+Show:
+
+James Carl M. Osio
+BSCpE-4B, Computer Engineering
+On-call tech support side quest
+Smartphone and laptop
+About eight hours of daily screen time
+Introduction to the dungeon
+Update navigation instructions to explain walking and doorway entry. Do not retain instructions that imply arrow keys instantly switch chapters.
+
+Profile Hall
+Preserve all seven activity-table rows and the active-use chart.
+
+The chart uses:
+
+FB Lite: 8 hours
+VS Code: 3 hours
+YouTube: 1 hour
+Messenger: 0.52 hours
+AI: 0.5 hours
+Firefox: 0.17 hours
+Spotify remains in the table but is excluded from the chart because it plays in the background.
+
+Do not describe the 13.19-hour activity sum as total daily screen time. The activities overlap. The personal daily estimate remains approximately eight hours.
+
+Analysis Chamber
+Preserve all ten questions and complete answers, grouped under:
+
+Media consumption
+Communication
+Benefits and risks
+The original treasure-chest accordions may become functional in the built experience. Every answer must remain accessible.
+
+Reading or opening all ten answers is not a prerequisite for continuing.
+
+Router Quest
+Preserve the full router story:
+
+The initial connection failure
+The workaround and its later problems
+Research through YouTube, forums, and AI
+The successful fix
+The lesson about researching feared problems
+Do not turn this into a new technical puzzle.
+
+Reel Trap
+Preserve the original simulation:
+
+Start at 9:00 PM
+Start with 0 Reels watched
+Each swipe adds one Reel and 17 simulated minutes
+After six swipes, display the lost-time message
+Escape resets the simulation to 9:00 PM and zero Reels
+The 17-minute increment is an illustrative mechanic—not a factual claim that a single Reel lasts 17 minutes.
+
+Escape does not skip to the next content room. Continuing still leads through hallway 5.
+
+Plan Armory
+Preserve the seven wellness actions:
+
+Turn off non-essential notifications; keep three apps.
+Set a one-hour limit on FB Lite and Reels.
+Complete a 90-minute study block with the phone elsewhere.
+Verify two claims or AI answers with two reliable sources.
+Spend one offline hour with friends or family.
+Avoid screens for 30 minutes before bed.
+Review Screen Time against Day 1.
+Start at 0 of 7 completed for a new visitor.
+
+Checkboxes must toggle independently and update the total. At seven completed, show the completion message.
+
+Do not require seven actual days—or seven checked boxes—to reach the next room.
+
+Infographic Vault
+Preserve:
+
+Three positive effects
+Three risks
+Five healthy habits
+The class idea about Gen Z communication
+The personal pledge
+Name and class attribution
+Exit
+Show the one-change commitment: cap Reels at one hour per day.
+
+Show Dungeon cleared when the visitor reaches this content room through hallway 7.
+
+Back to the gate may return to the beginning. It should not silently erase wellness progress.
+
+9. Progress and saving
+Keep these systems separate:
+
+Journey progress
+Eight content rooms total.
+Gate counts as the first explored room.
+Start at 1/8.
+Count each room only once.
+Reach 8/8 at Exit.
+Wellness progress
+Seven independent checklist actions.
+Start at 0/7.
+Do not automatically complete actions when rooms are explored.
+Recommended saved state
+Remember locally:
+
+Explored rooms
+Current room or hallway
+Last safe hallway position
+Knight facing direction
+Wellness checkbox states
+Reel Trap simulation state
+Restoring a previously earned position is allowed. Arbitrary navigation to unopened rooms is not.
+
+If saved information is invalid, return safely to Gate rather than showing a broken hallway.
+
+Provide a separate, clearly confirmed Reset progress action if needed.
+
+10. Visual and asset handling
+Shared visual language
+Follow the existing redesign:
+
+Dusk-purple dungeon surfaces
+Torch-gold emphasis
+Parchment content panels
+Pixel-style headings
+Readable body typography
+The same knight identity throughout
+Do not introduce a different character palette or scale for each map.
+
+Map backgrounds
+Export only the clean map-artwork area.
+
+Hide the actor-preview layer.
+Do not include surrounding presentation text, D-pad, or collision annotations.
+Use the existing 0.5× map export setting for 384 × 288 output.
+For the simplest first version, use the complete environment image as the background, then draw the knight separately above it.
+
+The tile atlas supports a later tile-by-tile reconstruction. That reconstruction is not required to make the first version work.
+
+Pixel scaling
+Use nearest-neighbor scaling.
+
+Prefer integer display scales:
+
+1×: 384 × 288
+2×: 768 × 576
+3×: 1152 × 864
+Movement and collision always use native world coordinates, regardless of display size.
+
+11. Responsive behavior, accessibility, and loading
+Desktop
+Show the entire hallway and its destination label.
+Keep the D-pad available even when keyboard controls are supported.
+Allow content rooms to scroll normally.
+Mobile
+Stack the map and controls when necessary.
+Use the largest integer map scale that fits.
+Make touch targets larger than the visual pixel-arrow artwork.
+Do not let D-pad presses accidentally scroll the page.
+Accessibility
+Give directional controls clear accessible names.
+Preserve visible keyboard focus.
+Do not communicate status through color alone.
+Respect reduced-motion preferences.
+Provide textual location and destination guidance.
+A useful accessibility option is stepwise movement buttons that move the character through the same valid cells. They should still require doorway entry rather than skip directly to a chapter.
+
+Loading
+Load required map and character assets before enabling movement.
+
+If something is unavailable, show a clear retry state. Do not let the knight move through an invisible environment.
+
+12. Recommended build order
+Phase 1 — One complete vertical slice
+Implement:
+
+Gate → hallway 1 → Profile Hall
+
+Include movement, collision, walking poses, D-pad input, doorway entry, and safe return navigation.
+
+Phase 2 — All seven maps
+Reuse the same movement system. Supply each hallway’s own:
+
+Background
+Collision layout
+Spawn
+Destination threshold
+Previous room
+Next room
+Labels and theme
+Do not build seven separate movement systems.
+
+Phase 3 — Scrapbook interactions
+Finish:
+
+Analysis accordions
+Reel Trap simulation
+Wellness checklist
+Journey progress
+Saved state
+Phase 4 — Polish
+Test responsive layouts, focus behavior, touch input, crisp scaling, loading, and the final Exit flow.
+
+13. Acceptance checklist
+The experience is ready when:
+
+ All eight content rooms retain their complete original content.
+ All seven hallway maps match their distinct designs.
+ The same knight appears throughout.
+ Keyboard and D-pad movement both work.
+ Walls, props, and map boundaries block movement correctly.
+ Every spawn has a valid route to its destination.
+ A hallway’s forward room opens only through its threshold.
+ Holding a direction cannot trigger multiple room openings.
+ Returning from a room does not cause an immediate reopening loop.
+ No direct “Next room” shortcut bypasses exploration.
+ Room progress and wellness progress remain independent.
+ The Reel Trap preserves its original simulation.
+ Pixel assets stay crisp and correctly scaled.
+ Content remains readable and usable on mobile.
+ Saved progress restores safely.
+ Exit shows the final commitment without requiring completion of the wellness checklist.
+The central rule: the scrapbook remains the main experience; the dungeon provides short, consistent, meaningful transitions between its chapters.
+
