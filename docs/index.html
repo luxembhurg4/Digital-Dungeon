@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dungeon of Tabs — My Digital Life</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="loading-overlay" class="loading-overlay" role="status">
+  <div class="loading-box">
+    <p class="loading-title">LIGHTING THE TORCHES…</p>
+    <p class="loading-text">Loading maps and character sprites.</p>
+    <button id="retry-btn" class="btn btn-gold" hidden>Retry loading</button>
+  </div>
+</div>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="assets/hero/down-idle.png" alt="" class="brand-icon" width="24" height="24">
+      <div class="brand-name">DUNGEON<br>OF TABS</div>
+      <div class="brand-tag">A digital life scrapbook</div>
+    </div>
+
+    <nav aria-label="Chapters">
+      <div class="nav-label">CHOOSE A ROOM</div>
+      <ul id="chapter-list" class="chapter-list"></ul>
+    </nav>
+
+    <div class="progress-card">
+      <p class="progress-line">Rooms explored <strong id="explored-count">1/8</strong></p>
+      <div id="progress-segments" class="progress-segments" aria-hidden="true"></div>
+      <p class="progress-note">Chapter journey · not quest completion</p>
+    </div>
+
+    <div class="author">
+      <p class="author-name">James Carl M. Osio</p>
+      <p class="author-class">BSCpE-4B · Computer Engineering</p>
+    </div>
+
+    <button id="reset-btn" class="reset-btn">Reset progress</button>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <p class="crumb">My Digital Life <span class="sep">/</span> <strong id="crumb-room">Gate</strong></p>
+      <p class="edition"><span class="dot"></span> JOURNAL VIEW · STATIC EDITION</p>
+    </header>
+
+    <main id="content" class="content">
+
+      <!-- ============ HALLWAY ============ -->
+      <section class="screen" id="screen-hallway" hidden aria-labelledby="hall-title">
+        <p class="eyebrow" id="hall-eyebrow">HALLWAY 01 OF 07</p>
+        <h1 id="hall-title" tabindex="-1">The Arrival Hall</h1>
+        <p class="hall-chip" id="hall-chip">HALLWAY 01 / 07 · GATE → PROFILE HALL</p>
+
+        <div class="hall-grid">
+          <div class="hall-main">
+            <div id="hallway-canvas-frame" tabindex="-1">
+              <canvas id="hallway-canvas" width="384" height="288" role="img"
+                      aria-label="Dungeon hallway map with a movable knight"></canvas>
+            </div>
+            <p class="hall-caption" id="hall-caption">Stone, banners and warm torchlight introduce the journey.</p>
+            <p class="hall-note">Enter the destination doorway to proceed. No next-room shortcut.</p>
+          </div>
+
+          <aside class="hall-side">
+            <div class="side-card">
+              <div class="side-label">NEXT ENTRANCE</div>
+              <h2 class="side-title" id="dest-label">Profile Hall</h2>
+              <p class="side-text">Walk into the gold threshold to open this room.</p>
+            </div>
+
+            <div class="side-card">
+              <div class="side-label">MOVE</div>
+              <div class="dpad" role="group" aria-label="Movement controls">
+                <button class="dpad-btn dpad-up" data-dir="up" aria-label="Move up">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5L4 13H9V19H15V13H20Z"/></svg>
+                </button>
+                <button class="dpad-btn dpad-left" data-dir="left" aria-label="Move left">
+                  <svg viewBox="0 0 24 24" style="transform:rotate(270deg)" aria-hidden="true"><path d="M12 5L4 13H9V19H15V13H20Z"/></svg>
+                </button>
+                <div class="dpad-center" aria-hidden="true"></div>
+                <button class="dpad-btn dpad-right" data-dir="right" aria-label="Move right">
+                  <svg viewBox="0 0 24 24" style="transform:rotate(90deg)" aria-hidden="true"><path d="M12 5L4 13H9V19H15V13H20Z"/></svg>
+                </button>
+                <button class="dpad-btn dpad-down" data-dir="down" aria-label="Move down">
+                  <svg viewBox="0 0 24 24" style="transform:rotate(180deg)" aria-hidden="true"><path d="M12 5L4 13H9V19H15V13H20Z"/></svg>
+                </button>
+              </div>
+              <p class="side-text">D-pad / arrow keys<br>4 directions · no diagonals</p>
+            </div>
+
+            <p class="guide" id="hallway-guide"></p>
+
+            <details class="stepwise">
+              <summary>Step-by-step movement</summary>
+              <div class="step-row">
+                <button class="step-btn" data-dir="up">Step up</button>
+                <button class="step-btn" data-dir="left">Step left</button>
+                <button class="step-btn" data-dir="right">Step right</button>
+                <button class="step-btn" data-dir="down">Step down</button>
+              </div>
+              <p class="side-text">Moves the knight one tile through the same valid cells. Doorways still must be entered on foot.</p>
+            </details>
+          </aside>
+        </div>
+
+        <p id="hallway-status" class="visually-hidden" aria-live="polite"></p>
+      </section>
+
+      <!-- ============ ROOM 01 · GATE ============ -->
+      <section class="screen room" id="room-gate" data-room="0" hidden aria-labelledby="h-gate">
+        <p class="eyebrow">ROOM 01 / 08 · MEET THE ADVENTURER</p>
+        <h1 id="h-gate" tabindex="-1">My Digital Life: A Gen&nbsp;Z Technology Scrapbook</h1>
+        <p class="room-sub">Welcome to the Dungeon of Tabs. Every room is a tab I keep open in my life. One room has a monster.</p>
+
+        <div class="gate-hero">
+          <div class="gate-hero-text">
+            <h2>Welcome to the<br>Dungeon of Tabs.</h2>
+            <p>Every room is a tab I keep open in my life. One room has a monster.</p>
+            <button class="btn btn-gold" data-act="continue">Enter the dungeon <span class="arr">→</span></button>
+            <p class="muted-line"><span class="book">▤</span> 8 rooms · one digital life · a healthier next chapter</p>
+          </div>
+          <figure class="scene-card" id="scene-gate">
+            <div class="scene-img"></div>
+            <figcaption>THE ADVENTURE BEGINS</figcaption>
+          </figure>
+        </div>
+
+        <div class="parchment profile-card">
+          <p class="parch-label">ADVENTURER PROFILE</p>
+          <h3 class="parch-title">Hero: James Carl M. Osio</h3>
+          <div class="stat-grid">
+            <div class="stat"><p class="stat-label">CLASS</p><p class="stat-value">BSCpE-4B</p><p class="stat-note">Computer Engineering</p></div>
+            <div class="stat"><p class="stat-label">SIDE QUEST</p><p class="stat-value">On-call tech support</p><p class="stat-note">Problem-solving in the real world</p></div>
+            <div class="stat"><p class="stat-label">GEAR</p><p class="stat-value">Smartphone + laptop</p><p class="stat-note">Two devices, many open tabs</p></div>
+            <div class="stat"><p class="stat-label">DAILY SCREEN TIME</p><p class="stat-value">About 8 hours</p><p class="stat-note">Daily estimate, not activity totals</p></div>
+          </div>
+        </div>
+
+        <div class="note-box">
+          <p class="note-label">HOW TO EXPLORE</p>
+          <p>Move the knight with the arrow keys, WASD, or the D-pad, and open each room by walking into its gold doorway. Progress is saved on this device.</p>
+        </div>
+
+        <footer class="room-footer" data-room="0"></footer>
+      </section>
+
+      <!-- ============ ROOM 02 · PROFILE HALL ============ -->
+      <section class="screen room" id="room-profile-hall" data-room="1" hidden aria-labelledby="h-profile">
+        <p class="eyebrow">ROOM 02 / 08 · MY DIGITAL MEDIA PROFILE</p>
+        <h1 id="h-profile" tabindex="-1">Profile Hall</h1>
+        <p class="room-sub">What I use, how long I use it, and why it matters — measured across my phone and laptop.</p>
+
+        <div class="parchment chart-card">
+          <p class="parch-label">ACROSS PHONE + LAPTOP</p>
+          <h3 class="parch-title">Share of my active screen time</h3>
+          <div class="bars">
+            <div class="bar-row"><span class="bar-name">FB Lite</span><span class="bar-track"><span class="bar-fill" style="width:60.7%"></span></span><span class="bar-pct">60.7%</span><span class="bar-hrs">8 hrs</span></div>
+            <div class="bar-row"><span class="bar-name">VS Code</span><span class="bar-track"><span class="bar-fill" style="width:22.7%"></span></span><span class="bar-pct">22.7%</span><span class="bar-hrs">3 hrs</span></div>
+            <div class="bar-row"><span class="bar-name">YouTube</span><span class="bar-track"><span class="bar-fill" style="width:7.6%"></span></span><span class="bar-pct">7.6%</span><span class="bar-hrs">1 hr</span></div>
+            <div class="bar-row"><span class="bar-name">Messenger</span><span class="bar-track"><span class="bar-fill" style="width:3.9%"></span></span><span class="bar-pct">3.9%</span><span class="bar-hrs">0.52 hrs</span></div>
+            <div class="bar-row"><span class="bar-name">AI</span><span class="bar-track"><span class="bar-fill" style="width:3.8%"></span></span><span class="bar-pct">3.8%</span><span class="bar-hrs">0.5 hrs</span></div>
+            <div class="bar-row"><span class="bar-name">Firefox</span><span class="bar-track"><span class="bar-fill" style="width:1.3%"></span></span><span class="bar-pct">1.3%</span><span class="bar-hrs">0.17 hrs</span></div>
+          </div>
+          <p class="parch-foot">Spotify (3 hrs) plays in the background, so it is not counted. Hours are rough and overlap across phone and laptop, so the chart shows percentages. The 13.19-hour sum is not daily screen time — the activities overlap. My personal daily estimate remains about eight hours.</p>
+        </div>
+
+        <p class="section-label">THE FULL INVENTORY · 7 ACTIVITIES</p>
+        <div class="table-wrap parchment">
+          <table class="activity-table">
+            <thead><tr><th>Activity</th><th>Platform</th><th>Time</th><th>Purpose</th><th>Effect on me</th></tr></thead>
+            <tbody>
+              <tr><td>Reels, social media</td><td>FB Lite</td><td>8 hrs</td><td>Entertainment</td><td>Relaxed, but time vanishes</td></tr>
+              <tr><td>Coding</td><td>VS Code</td><td>3 hrs</td><td>Study, skills</td><td>Focused</td></tr>
+              <tr><td>Tutorials, playthroughs</td><td>YouTube</td><td>1 hr</td><td>Learning, rest</td><td>Informed, late nights</td></tr>
+              <tr><td>Chats</td><td>Messenger</td><td>31 min</td><td>Communication</td><td>Connected, sometimes distracted</td></tr>
+              <tr><td>Troubleshooting help</td><td>AI</td><td>30 min</td><td>On-call fixes</td><td>Confident, faster</td></tr>
+              <tr><td>Research, leads</td><td>Firefox</td><td>10 min</td><td>Learning, work</td><td>Informed</td></tr>
+              <tr><td>Music</td><td>Spotify</td><td>3 hrs</td><td>Mood, focus</td><td>Calm, energized</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <footer class="room-footer" data-room="1"></footer>
+      </section>
+
+      <!-- ============ ROOM 03 · ANALYSIS CHAMBER ============ -->
+      <section class="screen room" id="room-analysis-chamber" data-room="2" hidden aria-labelledby="h-analysis">
+        <p class="eyebrow">ROOM 03 / 08 · TEN QUESTIONS, TEN ANSWERS</p>
+        <h1 id="h-analysis" tabindex="-1">Analysis Chamber</h1>
+        <p class="room-sub">Ten questions about the way I use technology — answered honestly. Open each chest to read the answer.</p>
+
+        <p class="section-label">MEDIA CONSUMPTION <span class="qa-counter" id="qa-counter">0 / 10 OPEN</span></p>
+        <div class="qa-group">
+          <details class="qa parchment"><summary><span class="chest">▣</span> 1. What content do you consume the most?</summary>
+            <p>Short-form Reels and social posts on FB Lite, then music on Spotify, playthrough videos and tutorials on YouTube, and tech content while I work.</p></details>
+          <details class="qa parchment"><summary><span class="chest">▣</span> 2. How many hours do you spend on your devices?</summary>
+            <p>About 8 hours a day across my phone and laptop. My activity list sums to 13.19 hours, but those hours overlap — Spotify plays in the background — so the sum is not my daily screen time.</p></details>
+          <details class="qa parchment"><summary><span class="chest">▣</span> 3. Why do I keep watching past midnight?</summary>
+            <p>Reels have no natural ending. Each one is only seconds, so “one more” never feels like a decision — until it is already 1 AM and sleep is gone.</p></details>
+          <details class="qa parchment"><summary><span class="chest">▣</span> 4. What role does YouTube play in my day?</summary>
+            <p>Both learning and rest. Tutorials and playthroughs are where my VS Code skills grow and where I switch off after on-call work.</p></details>
+        </div>
+
+        <p class="section-label">COMMUNICATION</p>
+        <div class="qa-group">
+          <details class="qa parchment"><summary><span class="chest">▣</span> 5. How has tech changed how I communicate?</summary>
+            <p>Everything is instant — Messenger group chats with classmates, quick reactions, shared Reels. I am reachable all day, which is both the benefit and the cost.</p></details>
+          <details class="qa parchment"><summary><span class="chest">▣</span> 6. Which communication tools do I prefer?</summary>
+            <p>Text and voice notes on Messenger for speed, Reels as a shared language with friends, and face-to-face talk whenever tone matters.</p></details>
+          <details class="qa parchment"><summary><span class="chest">▣</span> 7. What are the benefits and risks of constant connection?</summary>
+            <p>Benefit: help is one message away — on-call support taught me that. Risk: notifications fragment my attention, and “quick replies” quietly eat study blocks.</p></details>
+        </div>
+
+        <p class="section-label">BENEFITS AND RISKS</p>
+        <div class="qa-group">
+          <details class="qa parchment"><summary><span class="chest">▣</span> 8. What are three benefits you get from technology?</summary>
+            <p>Learning access (YouTube, forums, AI), digital skills for my CpE career, and global connectivity with classmates, teachers, and communities.</p></details>
+          <details class="qa parchment"><summary><span class="chest">▣</span> 9. What are three risks you have experienced?</summary>
+            <p>Endless Reels scrolling that eats time, late-night binge-watching that cuts sleep, and trusting an unverified fix — the mistake behind my router story.</p></details>
+          <details class="qa parchment"><summary><span class="chest">▣</span> 10. Overall, do the benefits outweigh the risks?</summary>
+            <p>The benefits win, but only when I am intentional. The risks grow when I drift — which is exactly what the 7-day plan in the Plan Armory targets.</p></details>
+        </div>
+
+        <footer class="room-footer" data-room="2"></footer>
+      </section>
+
+      <!-- ============ ROOM 04 · ROUTER QUEST ============ -->
+      <section class="screen room" id="room-router-quest" data-room="3" hidden aria-labelledby="h-router">
+        <p class="eyebrow">ROOM 04 / 08 · WHEN TECH SCARED ME</p>
+        <h1 id="h-router" tabindex="-1">Router Quest</h1>
+        <p class="room-sub">An on-call story about fear, research, and a better fix.</p>
+
+        <div class="two-col">
+          <div class="parchment story-card">
+            <p class="parch-label">THE ENCOUNTER</p>
+            <h3>A workaround was not the answer.</h3>
+            <p>At the office, nothing could connect to the ISP’s main router. Cornered, and wanting to be careful, I refused to touch the actual router. I built a workaround instead. It held for a while, then created a new set of problems.</p>
+          </div>
+          <div class="side-stack">
+            <figure class="scene-card scene-small">
+              <div class="scene-img scene-research"></div>
+              <figcaption>RESEARCH IS PART OF THE QUEST</figcaption>
+            </figure>
+            <div class="dark-card">
+              <p class="dark-label">TOOLS THAT HELPED ME</p>
+              <ul class="tool-list"><li>YouTube</li><li>Forums</li><li>AI</li></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="parchment story-card">
+          <p class="parch-label">THE TURNING POINT</p>
+          <h3>Research before making the next move.</h3>
+          <p>When my head cleared, I went to YouTube, forums, and AI to ask whether I could fix it without changing the ISP’s configuration. I could. The fix worked, and nothing else broke.</p>
+        </div>
+
+        <div class="loot-banner">
+          <span class="loot-icon" aria-hidden="true">▣</span>
+          <div>
+            <p class="loot-label">LOOT GAINED</p>
+            <p>A feared problem gets smaller when I research it first. Tech did not just hand me the answer, it made me more open-minded about problems I used to avoid.</p>
+          </div>
+        </div>
+
+        <footer class="room-footer" data-room="3"></footer>
+      </section>
+
+      <!-- ============ ROOM 05 · REEL TRAP ============ -->
+      <section class="screen room" id="room-reel-trap" data-room="4" hidden aria-labelledby="h-reel">
+        <p class="eyebrow">ROOM 05 / 08 · MY REAL WEAKNESS</p>
+        <h1 id="h-reel" tabindex="-1">The Reel Trap</h1>
+        <p class="room-sub">I get so immersed in Reels that I do not notice time passing. Fight the Reel Monster. It is 9:00 PM and you only meant to watch one.</p>
+
+        <div class="two-col">
+          <figure class="scene-card scene-monster">
+            <div class="monster-stage monster-feed" data-autoplay="on">
+              <div class="feed-head"><img src="assets/hero/monster.png" alt="The Reel Monster, a grinning green pixel face" width="40" height="40"><span class="auto-dot" aria-hidden="true"></span><span id="feed-now">NOW PLAYING · REEL 1 OF 7 · AUTOPLAY ON</span></div>
+              <div class="reel-progress" aria-hidden="true"><span class="reel-bar"></span></div>
+              <div class="reel-wrap">
+                <button class="btn reel-arrow reel-prev is-hot" type="button" aria-label="Previous reel"><span class="reel-arrow-big">◀</span><span class="reel-arrow-sub">Prev</span></button>
+                <div class="reel-deck">
+                <article class="reel-card is-active" data-reel="0">
+                  <p class="reel-tag">REEL 01 / 07</p>
+                  <div class="reel-frame"><iframe data-short="6YL9FxT6eHw" src="https://www.youtube.com/embed/6YL9FxT6eHw?rel=0" title="Reel 1" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+                  <button class="btn btn-gold reel-watch" type="button" data-watch="0">Count this Reel <span class="arr">→</span></button>
+                  <p class="reel-open"><a href="https://www.youtube.com/shorts/6YL9FxT6eHw" target="_blank" rel="noopener">Open on YouTube ↗</a></p>
+                </article>
+                <article class="reel-card" data-reel="1" hidden>
+                  <p class="reel-tag">REEL 02 / 07</p>
+                  <div class="reel-frame"><iframe data-short="UFe2L7LO6uc" src="https://www.youtube.com/embed/UFe2L7LO6uc?rel=0" title="Reel 2" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+                  <button class="btn btn-gold reel-watch" type="button" data-watch="1">Count this Reel <span class="arr">→</span></button>
+                  <p class="reel-open"><a href="https://www.youtube.com/shorts/UFe2L7LO6uc" target="_blank" rel="noopener">Open on YouTube ↗</a></p>
+                </article>
+                <article class="reel-card" data-reel="2" hidden>
+                  <p class="reel-tag">REEL 03 / 07</p>
+                  <div class="reel-frame"><iframe data-short="QHM-RFn6e7Q" src="https://www.youtube.com/embed/QHM-RFn6e7Q?rel=0" title="Reel 3" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+                  <button class="btn btn-gold reel-watch" type="button" data-watch="2">Count this Reel <span class="arr">→</span></button>
+                  <p class="reel-open"><a href="https://www.youtube.com/shorts/QHM-RFn6e7Q" target="_blank" rel="noopener">Open on YouTube ↗</a></p>
+                </article>
+                <article class="reel-card" data-reel="3" hidden>
+                  <p class="reel-tag">REEL 04 / 07</p>
+                  <div class="reel-frame"><iframe data-short="6JLCyiToRdo" src="https://www.youtube.com/embed/6JLCyiToRdo?rel=0" title="Reel 4" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+                  <button class="btn btn-gold reel-watch" type="button" data-watch="3">Count this Reel <span class="arr">→</span></button>
+                  <p class="reel-open"><a href="https://www.youtube.com/shorts/6JLCyiToRdo" target="_blank" rel="noopener">Open on YouTube ↗</a></p>
+                </article>
+                <article class="reel-card" data-reel="4" hidden>
+                  <p class="reel-tag">REEL 05 / 07</p>
+                  <div class="reel-frame"><iframe data-short="lKCUCJtQhWA" src="https://www.youtube.com/embed/lKCUCJtQhWA?rel=0" title="Reel 5" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+                  <button class="btn btn-gold reel-watch" type="button" data-watch="4">Count this Reel <span class="arr">→</span></button>
+                  <p class="reel-open"><a href="https://www.youtube.com/shorts/lKCUCJtQhWA" target="_blank" rel="noopener">Open on YouTube ↗</a></p>
+                </article>
+                <article class="reel-card" data-reel="5" hidden>
+                  <p class="reel-tag">REEL 06 / 07</p>
+                  <div class="reel-frame"><iframe data-short="vgrwRIkH7iM" src="https://www.youtube.com/embed/vgrwRIkH7iM?rel=0" title="Reel 6" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+                  <button class="btn btn-gold reel-watch" type="button" data-watch="5">Count this Reel <span class="arr">→</span></button>
+                  <p class="reel-open"><a href="https://www.youtube.com/shorts/vgrwRIkH7iM" target="_blank" rel="noopener">Open on YouTube ↗</a></p>
+                </article>
+                <article class="reel-card" data-reel="6" hidden>
+                  <p class="reel-tag">REEL 07 / 07</p>
+                  <div class="reel-frame"><iframe data-short="lDvQBE8_oO8" src="https://www.youtube.com/embed/lDvQBE8_oO8?rel=0" title="Reel 7" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+                  <button class="btn btn-gold reel-watch" type="button" data-watch="6">Count this Reel <span class="arr">→</span></button>
+                  <p class="reel-open"><a href="https://www.youtube.com/shorts/lDvQBE8_oO8" target="_blank" rel="noopener">Open on YouTube ↗</a></p>
+                </article>
+              </div>
+                <button class="btn reel-arrow reel-next is-hot" type="button" aria-label="Next reel"><span class="reel-arrow-big">▶</span><span class="reel-arrow-sub">Next</span></button>
+              </div>
+              <div class="feed-controls"><button class="btn btn-gold reel-auto is-on" type="button" aria-pressed="true">⏸ Pause autoplay</button><button class="btn btn-dark reel-sound" type="button" aria-pressed="false">🔇 Tap for sound</button></div>
+              <p class="feed-hint">7 real Shorts · autoplay on · ◀ / ▶ and Swipe count toward the trap sim.</p>
+            </div>
+            <figcaption>REEL MONSTER · THE ENDLESS FEED</figcaption>
+          </figure>
+
+          <div class="parchment sim-card">
+            <p class="parch-label sim-label">YOU ONLY MEANT TO WATCH ONE</p>
+            <p class="sim-time" id="reel-time">9:00 PM</p>
+            <p class="sim-count">Reels watched: <strong id="reel-count">0</strong></p>
+            <div class="sim-actions">
+              <button class="btn btn-gold" id="reel-swipe">Swipe to next Reel <span class="arr">→</span></button>
+              <button class="btn btn-dark" id="reel-escape">Escape</button>
+            </div>
+            <p class="sim-note" id="reel-lost" hidden>Enough — look at the time you will never get back. That is the trap.</p>
+            <p class="sim-foot">Each swipe adds one Reel and 17 simulated minutes. Escape resets the simulation to 9:00 PM — it does not skip to the next room.</p>
+          </div>
+        </div>
+
+        <div class="weakness">
+          <div class="weakness-stat"><p class="weakness-num">+17 min</p><p class="weakness-cap">per swipe in the simulation</p></div>
+          <div class="weakness-text">
+            <p class="weakness-title">Each swipe feels like seconds. It is about 17 minutes. That is the habit my plan fixes.</p>
+            <p>The simulation adds 17 minutes with each swipe to make lost time visible. This is an illustrative game mechanic, not the duration of a single Reel.</p>
+          </div>
+        </div>
+
+        <footer class="room-footer" data-room="4"></footer>
+      </section>
+
+      <!-- ============ ROOM 06 · PLAN ARMORY ============ -->
+      <section class="screen room" id="room-plan-armory" data-room="5" hidden aria-labelledby="h-plan">
+        <p class="eyebrow">ROOM 06 / 08 · 7-DAY DIGITAL WELLNESS PLAN</p>
+        <h1 id="h-plan" tabindex="-1">Plan Armory</h1>
+        <p class="room-sub">Seven small quests to equip a healthier digital life. Tick each one as you complete it — these happen in daily life, not in the dungeon.</p>
+
+        <div class="two-col plan-grid">
+          <div class="parchment">
+            <h3 class="parch-title">Seven days. Seven quests.</h3>
+            <ul class="quest-list" id="quest-list">
+              <li><label><input type="checkbox" class="quest-check" data-i="0"> <span class="quest-day">DAY 01</span> <span class="quest-text">Turn off non-essential notifications (keep 3 apps)</span></label></li>
+              <li><label><input type="checkbox" class="quest-check" data-i="1"> <span class="quest-day">DAY 02</span> <span class="quest-text">Set a 1-hour limit on FB Lite and Reels</span></label></li>
+              <li><label><input type="checkbox" class="quest-check" data-i="2"> <span class="quest-day">DAY 03</span> <span class="quest-text">Complete one 90-minute study block with the phone elsewhere</span></label></li>
+              <li><label><input type="checkbox" class="quest-check" data-i="3"> <span class="quest-day">DAY 04</span> <span class="quest-text">Verify two claims or AI answers with two reliable sources</span></label></li>
+              <li><label><input type="checkbox" class="quest-check" data-i="4"> <span class="quest-day">DAY 05</span> <span class="quest-text">Spend one offline hour with friends or family</span></label></li>
+              <li><label><input type="checkbox" class="quest-check" data-i="5"> <span class="quest-day">DAY 06</span> <span class="quest-text">Avoid screens for 30 minutes before bed</span></label></li>
+              <li><label><input type="checkbox" class="quest-check" data-i="6"> <span class="quest-day">DAY 07</span> <span class="quest-text">Review Screen Time against Day 1</span></label></li>
+            </ul>
+          </div>
+
+          <div class="side-stack">
+            <div class="dark-card">
+              <p class="dark-label">WELLNESS QUEST PROGRESS</p>
+              <p class="wellness-count"><strong id="wellness-count">0 of 7</strong> quests done</p>
+              <div id="wellness-segments" class="progress-segments" aria-hidden="true"></div>
+              <p class="dark-note" id="wellness-done" hidden>All seven quests complete — the plan is working. The dungeon stays open either way.</p>
+              <p class="dark-note">A fresh start. Visiting a room does not complete a quest; these actions happen in my daily life. Progress here never blocks the journey.</p>
+            </div>
+            <div class="dark-card">
+              <p class="dark-label">THE HABIT TO PROTECT</p>
+              <p class="habit-title">One hour of Reels.<br>More time for life.</p>
+              <p class="dark-note">Day 2 addresses the Reel Trap directly. Day 7 is a chance to reflect, not to pretend the work is done.</p>
+            </div>
+          </div>
+        </div>
+
+        <footer class="room-footer" data-room="5"></footer>
+      </section>
+
+      <!-- ============ ROOM 07 · INFOGRAPHIC VAULT ============ -->
+      <section class="screen room" id="room-infographic-vault" data-room="6" hidden aria-labelledby="h-info">
+        <p class="eyebrow">ROOM 07 / 08 · MY HEALTHIER DIGITAL LIFE</p>
+        <h1 id="h-info" tabindex="-1">Infographic Vault</h1>
+        <p class="room-sub">The benefits I want to keep, the risks I want to reduce, and the habits that connect them.</p>
+
+        <div class="parchment">
+          <p class="parch-label">A BETTER RELATIONSHIP WITH TECHNOLOGY</p>
+          <div class="two-col benefit-risk">
+            <div class="br-card br-good">
+              <h3>✦ Three positive effects</h3>
+              <ul><li>Learning access (YouTube, forums, AI)</li><li>Digital skills for my CpE career</li><li>Global connectivity</li></ul>
+            </div>
+            <div class="br-card br-bad">
+              <h3>⚠ Three risks</h3>
+              <ul><li>Endless Reels scrolling</li><li>Sleep loss from binge-watching</li><li>Unverified fixes and information</li></ul>
+            </div>
+          </div>
+
+          <h3 class="parch-title habits-title">5 healthy habits</h3>
+          <ol class="habit-list">
+            <li>Cap Reels at 1 hour a day</li>
+            <li>Mute non-essential notifications</li>
+            <li>90-minute phone-away study blocks</li>
+            <li>Verify with 2 sources before trusting</li>
+            <li>Screens off 30 min before bed</li>
+          </ol>
+
+          <div class="class-idea">
+            <p class="parch-label">KEY IDEA FROM CLASS</p>
+            <p>Gen Z communication is visual, quick, and peer-driven — which is exactly why healthy boundaries have to be just as quick and visible.</p>
+          </div>
+        </div>
+
+        <div class="loot-banner">
+          <div>
+            <p class="loot-label">MY PLEDGE</p>
+            <p class="pledge-text">I will use technology to build skills, not to burn hours.</p>
+            <p class="pledge-sign">James Carl M. Osio · BSCpE-4B</p>
+          </div>
+        </div>
+
+        <footer class="room-footer" data-room="6"></footer>
+      </section>
+
+      <!-- ============ ROOM 08 · THE EXIT ============ -->
+      <section class="screen room" id="room-exit" data-room="7" hidden aria-labelledby="h-exit">
+        <p class="eyebrow">ROOM 08 / 08 · MY ONE CHANGE</p>
+        <h1 id="h-exit" tabindex="-1">The Exit</h1>
+        <p class="room-sub">My one change. The most valuable loot is a habit I can carry back into real life.</p>
+
+        <div class="two-col">
+          <figure class="scene-card">
+            <div class="scene-img scene-chest"></div>
+            <figcaption>THE LAST CHEST · A NEW INTENTION</figcaption>
+          </figure>
+
+          <div class="parchment">
+            <p class="parch-label">THE ONE CHANGE I WILL MAKE</p>
+            <p class="exit-pledge">One hour a day.<br>Not one more lost night.</p>
+            <p>After analyzing my digital habits, the ONE change I will make is to <strong>cap my Reels at one hour a day</strong>, so technology stays a tool for learning and fixing problems instead of something that controls my time and sleep.</p>
+          </div>
+        </div>
+
+        <div class="cleared-banner">
+          <span class="flag-icon" aria-hidden="true">⚑</span>
+          <div>
+            <p class="cleared-title">Dungeon cleared.</p>
+            <p id="cleared-text">8 of 8 rooms explored. The journal is complete; the 7-day wellness plan is still at 0 of 7 quests done.</p>
+          </div>
+        </div>
+
+        <div class="signature-row">
+          <p class="sig-name">James Carl M. Osio · BSCpE-4B</p>
+          <p class="sig-motto">Keep the skills. Reclaim the hours.</p>
+        </div>
+
+        <footer class="room-footer" data-room="7"></footer>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/hallway.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
+
+
+
+
+
+
