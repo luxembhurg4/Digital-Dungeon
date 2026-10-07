@@ -11,7 +11,7 @@ const Hallway = (() => {
 
   const state = {
     index: -1, grid: null, k: { x: 0, y: 0, dir: 'down' },
-    armedDest: true, armedArrival: true, held: [],
+    armedDest: true, armedArrival: true, held: [], confirming: false,
     raf: 0, lastT: 0, walkT: 0, moving: false, lastSaveT: 0,
     mapImg: null, ready: false, maps: {}, entry: 'forward'
   };
@@ -152,7 +152,55 @@ const Hallway = (() => {
 
   function afterMove() { checkTriggers(); App.save(); }
 
+  /* ---------- back-door confirmation (scroll prompt) ---------- */
+  function openBackConfirm() {
+    state.confirming = true;
+    clearHeld();
+    const el = document.getElementById('hall-confirm');
+    const q = document.getElementById('hall-confirm-q');
+    if (q) q.textContent = 'Are you sure you want to go back to “' + ROOMS[state.index].name + '”?';
+    if (el) {
+      el.hidden = false;
+      const st = document.getElementById('hallway-status');
+      if (st) st.textContent = 'Confirm going back to ' + ROOMS[state.index].name + '.';
+      const yes = document.getElementById('hall-confirm-yes');
+      if (yes) yes.focus();
+    }
+  }
+  function closeBackConfirm() {
+    state.confirming = false;
+    const el = document.getElementById('hall-confirm');
+    if (el) el.hidden = true;
+  }
+  function confirmBackYes() {
+    if (!state.confirming) return;
+    closeBackConfirm();
+    App.openRoomByIndex(state.index, { hall: state.index, side: 'arrival' });
+  }
+  function confirmBackNo() {
+    if (!state.confirming) return;
+    closeBackConfirm();
+    // step the hero off the arrival threshold so the doorway re-arms and the
+    // prompt can be triggered again deliberately
+    const h = HALLWAYS[state.index];
+    const ny = state.k.y - WORLD.TILE;
+    if (ny >= 0 && cellsOpen(state.k.x, ny)) state.k.y = ny;
+    else { state.k.x = h.spawn[0] * 16; state.k.y = h.spawn[1] * 16; }
+    state.armedArrival = false;   // re-arms once the hero leaves the cells
+    draw();
+    App.save();
+    const st = document.getElementById('hallway-status');
+    if (st) st.textContent = 'Stayed in the hallway.';
+  }
+  function bindBackConfirm() {
+    const yes = document.getElementById('hall-confirm-yes');
+    const no = document.getElementById('hall-confirm-no');
+    if (yes) yes.addEventListener('click', confirmBackYes);
+    if (no) no.addEventListener('click', confirmBackNo);
+  }
+
   function checkTriggers() {
+    if (state.confirming) return;
     const h = HALLWAYS[state.index];
     if (state.armedDest && h.dest.some(c => overlapsCell(state.k.x, state.k.y, c))) {
       state.armedDest = false;
@@ -168,7 +216,7 @@ const Hallway = (() => {
       state.armedArrival = false;
       state.entry = 'arrival';
       clearHeld();
-      App.openRoomByIndex(state.index, { hall: state.index, side: 'arrival' });
+      openBackConfirm();          // scroll prompt before actually going back
       return;
     }
     if (!state.armedArrival && !h.arrival.some(c => overlapsCell(state.k.x, state.k.y, c))) {
@@ -297,7 +345,7 @@ const Hallway = (() => {
 
   return {
     preload: () => preload().then(() => { state.ready = true; }),
-    bindInput, enter, exit, fit, snapshot,
+    bindInput, enter, exit, fit, snapshot, bindBackConfirm,
     debug: () => {
       if (state.index < 0) return { i: -1 };
       const f = feetRect(state.k.x, state.k.y);

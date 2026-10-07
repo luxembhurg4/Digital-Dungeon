@@ -68,7 +68,6 @@
                       aria-label="Dungeon hallway map with a movable knight"></canvas>
             </div>
             <p class="hall-caption" id="hall-caption">Stone, banners and warm torchlight introduce the journey.</p>
-            <p class="hall-note">Enter the destination doorway to proceed. No next-room shortcut.</p>
           </div>
 
           <aside class="hall-side">
@@ -116,11 +115,21 @@
         <p id="hallway-status" class="visually-hidden" aria-live="polite"></p>
       </section>
 
+      <!-- ====== BACK-DOOR CONFIRMATION OVERLAY ====== -->
+      <div id="hall-confirm" class="hall-confirm" hidden role="dialog" aria-label="Confirm going back">
+        <p id="hall-confirm-q" class="hall-confirm-q"></p>
+        <div class="hall-confirm-actions">
+          <button id="hall-confirm-no" class="btn btn-dark" type="button">Stay here</button>
+          <button id="hall-confirm-yes" class="btn btn-gold" type="button">Yes, go back</button>
+        </div>
+      </div>
+
       <!-- ============ ROOM 01 · GATE ============ -->
       <section class="screen room" id="room-gate" data-room="0" hidden aria-labelledby="h-gate">
         <p class="eyebrow">ROOM 01 / 08 · MEET THE ADVENTURER</p>
         <h1 id="h-gate" tabindex="-1">My Digital Life: A Gen&nbsp;Z Technology Scrapbook</h1>
         <p class="room-sub">Welcome to the Dungeon of Tabs. Every room is a tab I keep open in my life. One room has a monster.</p>
+        <p class="room-real-life">In real life: Who I am as a tech user.</p>
 
         <div class="gate-hero">
           <div class="gate-hero-text">
@@ -135,15 +144,14 @@
           </figure>
         </div>
 
-        <div class="parchment profile-card">
-          <p class="parch-label">ADVENTURER PROFILE</p>
-          <h3 class="parch-title">Hero: James Carl M. Osio</h3>
-          <div class="stat-grid">
-            <div class="stat"><p class="stat-label">CLASS</p><p class="stat-value">BSCpE-4B</p><p class="stat-note">Computer Engineering</p></div>
-            <div class="stat"><p class="stat-label">SIDE QUEST</p><p class="stat-value">On-call tech support</p><p class="stat-note">Problem-solving in the real world</p></div>
-            <div class="stat"><p class="stat-label">GEAR</p><p class="stat-value">Smartphone + laptop</p><p class="stat-note">Two devices, many open tabs</p></div>
-            <div class="stat"><p class="stat-label">DAILY SCREEN TIME</p><p class="stat-value">About 8 hours</p><p class="stat-note">Daily estimate, not activity totals</p></div>
-          </div>
+        <div class="how-to">
+          <p class="how-label">HOW TO PLAY</p>
+          <ol class="how-list">
+            <li>Explore the dungeon using the arrow keys, WASD, or D-pad.</li>
+            <li>Open each room by walking into its gold doorway.</li>
+            <li>Collect all the banners in a room to unlock the inventory.</li>
+            <li>Finish the journey to see the ending.</li>
+          </ol>
         </div>
 
         <div class="note-box">
@@ -159,6 +167,17 @@
         <p class="eyebrow">ROOM 02 / 08 · MY DIGITAL MEDIA PROFILE</p>
         <h1 id="h-profile" tabindex="-1">Profile Hall</h1>
         <p class="room-sub">What I use, how long I use it, and why it matters — measured across my phone and laptop.</p>
+        <p class="room-real-life">In real life: My real daily screen time: my devices, apps, and hours.</p>
+
+        <div class="how-to">
+          <p class="how-label">HOW TO PLAY</p>
+          <ol class="how-list">
+            <li>Read the banner at each app on the shelf.</li>
+            <li>Collect every banner in the room.</li>
+            <li>Open the Full Inventory.</li>
+            <li>Walk through the door to the next room.</li>
+          </ol>
+        </div>
 
         <div class="parchment chart-card">
           <p class="parch-label">ACROSS PHONE + LAPTOP</p>
@@ -175,19 +194,22 @@
         </div>
 
         <p class="section-label">THE FULL INVENTORY · 7 ACTIVITIES</p>
-        <div class="table-wrap parchment">
-          <table class="activity-table">
-            <thead><tr><th>Activity</th><th>Platform</th><th>Time</th><th>Purpose</th><th>Effect on me</th></tr></thead>
-            <tbody>
-              <tr><td>Reels, social media</td><td>FB Lite</td><td>8 hrs</td><td>Entertainment</td><td>Relaxed, but time vanishes</td></tr>
-              <tr><td>Coding</td><td>VS Code</td><td>3 hrs</td><td>Study, skills</td><td>Focused</td></tr>
-              <tr><td>Tutorials, playthroughs</td><td>YouTube</td><td>1 hr</td><td>Learning, rest</td><td>Informed, late nights</td></tr>
-              <tr><td>Chats</td><td>Messenger</td><td>31 min</td><td>Communication</td><td>Connected, sometimes distracted</td></tr>
-              <tr><td>Troubleshooting help</td><td>AI</td><td>30 min</td><td>On-call fixes</td><td>Confident, faster</td></tr>
-              <tr><td>Research, leads</td><td>Firefox</td><td>10 min</td><td>Learning, work</td><td>Informed</td></tr>
-              <tr><td>Music</td><td>Spotify</td><td>3 hrs</td><td>Mood, focus</td><td>Calm, energized</td></tr>
-            </tbody>
-          </table>
+        <div class="locked-overlay">
+          <div class="locked-banner" id="inventory-lock">Locked: collect all banners (0/6)</div>
+          <div class="table-wrap parchment" id="inventory-table" style="display:none">
+            <table class="activity-table">
+              <thead><tr><th>Activity</th><th>Platform</th><th>Time</th><th>Purpose</th><th>Effect on me</th></tr></thead>
+              <tbody>
+                <tr><td>Reels, social media</td><td>FB Lite</td><td>8 hrs</td><td>Entertainment</td><td>Relaxed, but time vanishes</td></tr>
+                <tr><td>Coding</td><td>VS Code</td><td>3 hrs</td><td>Study, skills</td><td>Focused</td></tr>
+                <tr><td>Tutorials, playthroughs</td><td>YouTube</td><td>1 hr</td><td>Learning, rest</td><td>Informed, late nights</td></tr>
+                <tr><td>Chats</td><td>Messenger</td><td>31 min</td><td>Communication</td><td>Connected, sometimes distracted</td></tr>
+                <tr><td>Troubleshooting help</td><td>AI</td><td>30 min</td><td>On-call fixes</td><td>Confident, faster</td></tr>
+                <tr><td>Research, leads</td><td>Firefox</td><td>10 min</td><td>Learning, work</td><td>Informed</td></tr>
+                <tr><td>Music</td><td>Spotify</td><td>3 hrs</td><td>Mood, focus</td><td>Calm, energized</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <footer class="room-footer" data-room="1"></footer>
@@ -198,6 +220,17 @@
         <p class="eyebrow">ROOM 03 / 08 · TEN QUESTIONS, TEN ANSWERS</p>
         <h1 id="h-analysis" tabindex="-1">Analysis Chamber</h1>
         <p class="room-sub">Ten questions about the way I use technology — answered honestly. Open each chest to read the answer.</p>
+        <p class="room-real-life">In real life: Ten honest answers about how I really use technology.</p>
+
+        <div class="how-to">
+          <p class="how-label">HOW TO PLAY</p>
+          <ol class="how-list">
+            <li>Walk up to a treasure chest and press A (or Space/E) to open it.</li>
+            <li>Read the question and my honest answer.</li>
+            <li>Open all ten chests to fill the Q&amp;A counter.</li>
+            <li>Walk through the gold doorway to continue.</li>
+          </ol>
+        </div>
 
         <p class="section-label">MEDIA CONSUMPTION <span class="qa-counter" id="qa-counter">0 / 10 OPEN</span></p>
         <div class="qa-group">
@@ -239,10 +272,25 @@
         <p class="eyebrow">ROOM 04 / 08 · WHEN TECH SCARED ME</p>
         <h1 id="h-router" tabindex="-1">Router Quest</h1>
         <p class="room-sub">An on-call story about fear, research, and a better fix.</p>
+        <p class="room-real-life">In real life: The on-call night a router problem scared me — and how research fixed it.</p>
 
-        <div class="two-col">
-          <div class="parchment story-card">
-            <p class="parch-label">THE ENCOUNTER</p>
+        <div class="how-to">
+          <p class="how-label">HOW TO PLAY</p>
+          <ol class="how-list">
+            <li>Read the quest banner right at the entrance.</li>
+            <li>Investigate the router, then connect the cable workaround.</li>
+            <li>Collect all three research scrolls — YouTube, Forums and AI.</li>
+            <li>Open the lesson chest, then continue to the next room.</li>
+          </ol>
+        </div>
+
+        <div class="dark-card room-intro" id="router-intro">
+          <p class="dark-label">QUEST BRIEFING · READ THIS FIRST</p>
+          <p>Three research scrolls are hidden in this room: YouTube, Forums and AI. Collect all three to unlock the real fix and the lesson chest. The lesson chest unlocks after all three research scrolls are collected.</p>
+        </div>
+
+        <div class="parchment story-card">
+          <p class="parch-label">QUEST · THE ROUTER CRISIS</p>
             <h3>A workaround was not the answer.</h3>
             <p>At the office, nothing could connect to the ISP’s main router. Cornered, and wanting to be careful, I refused to touch the actual router. I built a workaround instead. It held for a while, then created a new set of problems.</p>
           </div>
@@ -256,7 +304,6 @@
               <ul class="tool-list"><li>YouTube</li><li>Forums</li><li>AI</li></ul>
             </div>
           </div>
-        </div>
 
         <div class="parchment story-card">
           <p class="parch-label">THE TURNING POINT</p>
@@ -272,6 +319,14 @@
           </div>
         </div>
 
+        <div class="dark-card" id="router-scrolls">
+          <p class="dark-label">THE THREE RESEARCH SCROLLS</p>
+          <p id="scroll-youtube">Scroll 1/3 — YouTube: I went to YouTube to ask whether I could fix it without changing the ISP's configuration.</p>
+          <p id="scroll-forums">Scroll 2/3 — Forums: I went to the forums to ask whether I could fix it without changing the ISP's configuration.</p>
+          <p id="scroll-ai">Scroll 3/3 — AI: I went to AI to ask whether I could fix it without changing the ISP's configuration. I could. The fix worked, and nothing else broke.</p>
+          <p id="scroll-result">Fixed without changing the ISP's configuration.</p>
+        </div>
+
         <footer class="room-footer" data-room="3"></footer>
       </section>
 
@@ -280,6 +335,17 @@
         <p class="eyebrow">ROOM 05 / 08 · MY REAL WEAKNESS</p>
         <h1 id="h-reel" tabindex="-1">The Reel Trap</h1>
         <p class="room-sub">I get so immersed in Reels that I do not notice time passing. Fight the Reel Monster. It is 9:00 PM and you only meant to watch one.</p>
+        <p class="room-real-life">In real life: My real weakness — Reels that swallow whole evenings.</p>
+
+        <div class="how-to">
+          <p class="how-label">HOW TO PLAY</p>
+          <ol class="how-list">
+            <li>Walk up to the Reel Monster and press A to talk.</li>
+            <li>Swipe through Reels — the clock keeps moving.</li>
+            <li>Press Escape to break free and reset the simulation.</li>
+            <li>Walk through the gold doorway when you are ready.</li>
+          </ol>
+        </div>
 
         <div class="two-col">
           <figure class="scene-card scene-monster">
@@ -369,6 +435,17 @@
         <p class="eyebrow">ROOM 06 / 08 · 7-DAY DIGITAL WELLNESS PLAN</p>
         <h1 id="h-plan" tabindex="-1">Plan Armory</h1>
         <p class="room-sub">Seven small quests to equip a healthier digital life. Tick each one as you complete it — these happen in daily life, not in the dungeon.</p>
+        <p class="room-real-life">In real life: The seven-day wellness plan I actually follow.</p>
+
+        <div class="how-to">
+          <p class="how-label">HOW TO PLAY</p>
+          <ol class="how-list">
+            <li>Walk up to an equipment rack and press A to talk.</li>
+            <li>Read each day's wellness quest.</li>
+            <li>Tick “Mark this day complete” once you have done it in real life.</li>
+            <li>Walk through the gold doorway to continue.</li>
+          </ol>
+        </div>
 
         <div class="two-col plan-grid">
           <div class="parchment">
@@ -408,6 +485,17 @@
         <p class="eyebrow">ROOM 07 / 08 · MY HEALTHIER DIGITAL LIFE</p>
         <h1 id="h-info" tabindex="-1">Infographic Vault</h1>
         <p class="room-sub">The benefits I want to keep, the risks I want to reduce, and the habits that connect them.</p>
+        <p class="room-real-life">In real life: The habits that keep my digital life healthy.</p>
+
+        <div class="how-to">
+          <p class="how-label">HOW TO PLAY</p>
+          <ol class="how-list">
+            <li>Walk up to a habit torch and press A to light it.</li>
+            <li>Light all five torches to reveal the pledge.</li>
+            <li>Read the benefits and risks archives on both sides.</li>
+            <li>Walk through the gold doorway to continue.</li>
+          </ol>
+        </div>
 
         <div class="parchment">
           <p class="parch-label">A BETTER RELATIONSHIP WITH TECHNOLOGY</p>
@@ -453,6 +541,17 @@
         <p class="eyebrow">ROOM 08 / 08 · MY ONE CHANGE</p>
         <h1 id="h-exit" tabindex="-1">The Exit</h1>
         <p class="room-sub">My one change. The most valuable loot is a habit I can carry back into real life.</p>
+        <p class="room-real-life">In real life: The one change I will make — starting tonight.</p>
+
+        <div class="how-to">
+          <p class="how-label">HOW TO PLAY</p>
+          <ol class="how-list">
+            <li>Walk up to the last chest and press A to open it.</li>
+            <li>Read the final statistics at the exit marker.</li>
+            <li>Take the pledge back into real life.</li>
+            <li>Use the last door to return to the Gate.</li>
+          </ol>
+        </div>
 
         <div class="two-col">
           <figure class="scene-card">
@@ -489,6 +588,7 @@
 
 <script src="js/data.js"></script>
 <script src="js/hallway.js"></script>
+<script src="js/rooms.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

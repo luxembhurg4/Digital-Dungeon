@@ -4,3 +4,10 @@ site/test/shots/
 *.log
 .DS_Store
 Thumbs.db
+
+# builder source drops (kept locally, not deployed)
+new assets/
+new assets.zip
+new assest builder amster plan.txt
+Picture1.png
+
